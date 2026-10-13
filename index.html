@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NinExpo eShop</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- LIVE IN-APP NOTIFICATION TRAY -->
+<div id="notificationCenterTray" class="notification-center-tray"></div>
+
+   <div id="loadingOverlay" class="loading-overlay hidden">
+    <div class="loading-logo-box">
+        <img id="loadingPlatformLogo" src="images/nintendo-switch-seeklogo.png" alt="" aria-hidden="true">
+    </div>
+    <div class="loading-bar-track">
+        <div id="loadingBarFill" class="loading-bar-fill"></div>
+    </div>
+    <p id="loadingStatusText" style="margin-top: 15px; font-size: 12px; letter-spacing: 2px; color: var(--text-muted); font-weight: bold; text-transform: uppercase;" role="status" aria-live="polite">Processing Transaction</p>
+</div>
+
+    <div class="blurred-bg" aria-hidden="true">
+        <img class="ambient-platform-mark ambient-switch-mark" src="images/nintendo-switch-seeklogo.png" alt="">
+        <img class="ambient-platform-mark ambient-playstation-mark" src="images/playstation-seeklogo.png" alt="">
+        <img class="ambient-platform-mark ambient-xbox-mark" src="images/xbox-app-seeklogo.png" alt="">
+    </div>
+
+    <!-- 1. ACCOUNT SIGN-IN SCREEN -->
+<div id="auth-screen" class="auth-wrapper">
+    <div class="auth-card glass-panel">
+        <div class="logo-container">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#FF1A2B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 9h14l1 11H4L5 9Z"/>
+                <path d="M8 9V6.5a4 4 0 0 1 8 0V9"/>
+                <path d="M9 14h6"/>
+            </svg>
+            <span>NinExpo eShop</span>
+        </div>
+        <form id="loginForm">
+            <div class="auth-tabs-group" role="tablist" aria-label="Account access">
+                <button id="tab-login-btn" class="auth-tab active" type="button" role="tab" aria-selected="true">Sign In</button>
+                <button id="tab-register-btn" class="auth-tab" type="button" role="tab" aria-selected="false">Create Account</button>
+            </div>
+
+            <h1 id="authHeading" class="auth-heading">Sign in to this browser</h1>
+            <p id="authDescription" class="auth-description">Sign in with the email address associated with your account.</p>
+
+            <div class="form-group">
+                <label for="email">Email address</label>
+                <input type="email" id="email" placeholder="player@example.com" autocomplete="email" required>
+            </div>
+
+            <div id="signupFields" class="hidden">
+                <div class="form-group">
+                    <label for="username">Player username</label>
+                    <input type="text" id="username" placeholder="e.g., ShadowPlayer7" maxlength="60" autocomplete="nickname" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="signupAge">Age</label>
+                    <input type="number" id="signupAge" min="13" max="120" placeholder="13 or older" inputmode="numeric" disabled>
+                </div>
+                <p class="delivery-address-note">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+                    <span><strong>This is your delivery address.</strong> Disc/Card orders ship here, and it sets your delivery estimate. You can change it later in your profile.</span>
+                </p>
+                <div class="account-address-grid">
+                    <div class="form-group">
+                        <label for="signupCountry">Country</label>
+                        <input type="text" id="signupCountry" autocomplete="country-name" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupProvince">Province / State</label>
+                        <input type="text" id="signupProvince" autocomplete="address-level1" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupCity">City / Municipality</label>
+                        <input type="text" id="signupCity" autocomplete="address-level2" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupBarangay">Barangay / District</label>
+                        <input type="text" id="signupBarangay" disabled>
+                    </div>
+                </div>
+            </div>
+
+            <p id="authMessage" class="auth-message" role="status" aria-live="polite"></p>
+            <button type="submit" id="authSubmitButton" class="btn-auth-action">Sign in</button>
+        </form>
+    </div>
+</div>
+
+
+    <!-- 2. MAIN SHOP SCREEN -->
+    <div id="shop-screen" class="screen hidden">
+
+        <button id="mobileNavToggle" class="mobile-nav-toggle" type="button" aria-controls="shopSidebar" aria-expanded="false" aria-label="Open navigation">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                <path d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </button>
+        <aside class="sidebar" id="shopSidebar">
+            <button id="homeNavButton" class="home-nav-btn active" type="button" aria-current="page" onclick="showHomeDashboard()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="m3 10 9-7 9 7"></path>
+                    <path d="M5 9v11h14V9"></path>
+                    <path d="M9 20v-6h6v6"></path>
+                </svg>
+                <span>Home</span>
+            </button>
+            <div id="catalogNavigation">
+                <div class="platform-switcher" role="group" aria-label="Select Store Hub">
+                    <div class="nav-title">Select Store Hub</div>
+                    <button class="platform-btn active" id="btn-env-switch" type="button" aria-pressed="true" onclick="switchPlatformEcosystem('switch')">
+                        <span class="platform-logo-box switch"><img src="images/nintendo-switch-seeklogo.png" alt="" aria-hidden="true"></span>
+                        <span>Nintendo Switch</span>
+                    </button>
+                    <button class="platform-btn" id="btn-env-psp" type="button" aria-pressed="false" onclick="switchPlatformEcosystem('psp')">
+                        <span class="platform-logo-box playstation"><img src="images/playstation-seeklogo.png" alt="" aria-hidden="true"></span>
+                        <span>PlayStation</span>
+                    </button>
+                    <button class="platform-btn" id="btn-env-xbox" type="button" aria-pressed="false" onclick="switchPlatformEcosystem('xbox')">
+                        <span class="platform-logo-box xbox"><img src="images/xbox-app-seeklogo.png" alt="" aria-hidden="true"></span>
+                        <span>Microsoft Xbox</span>
+                    </button>
+                </div>
+                <div class="nav-title">Find by Genre</div>
+                <button class="genre-btn active" data-genre="All">All Games</button>
+                <button class="genre-btn" data-genre="Action-Adventure">Action-Adventure</button>
+                <button class="genre-btn" data-genre="Platformer">Platformer</button>
+                <button class="genre-btn" data-genre="RPG">RPG</button>
+                <button class="genre-btn" data-genre="Simulation">Simulation</button>
+                <button class="genre-btn" data-genre="Party-Racing">Party & Racing</button>
+                <div class="nav-title membership-nav-title">More</div>
+                <button class="genre-btn" data-genre="membership">Online Membership</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <!-- Quiet game-news ticker; filled from the Game Corner list in script.js -->
+            <div class="hero-news-ticker" role="region" aria-label="Game news">
+                <div class="ticker-wrap" id="newsTicker"></div>
+            </div>
+
+            <header class="header">
+                <div class="shop-title-container">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#E60012" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 9h14l1 11H4L5 9Z"/>
+                        <path d="M8 9V6.5a4 4 0 0 1 8 0V9"/>
+                        <path d="M9 14h6"/>
+                    </svg>
+                    <div class="brand-name">
+                        <h1>NinExpo eShop</h1>
+                        <span class="brand-platform">for Nintendo Switch</span>
+                    </div>
+                </div>
+
+                <div class="game-search" role="search">
+                    <svg class="game-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                        <circle cx="11" cy="11" r="7"></circle>
+                        <path d="m20 20-3.5-3.5"></path>
+                    </svg>
+                    <label for="gameSearchInput" class="visually-hidden">Search games</label>
+                    <input type="search" id="gameSearchInput" placeholder="Search games on every platform" autocomplete="off" spellcheck="false" aria-describedby="gameSearchHint">
+                    <kbd id="gameSearchHint" class="game-search-hint" aria-label="Press slash to search">/</kbd>
+                </div>
+
+                <div class="header-right">
+                    <div class="statement-of-purpose">
+                        <strong>Currency:</strong> <span id="currencyStatus">PHP</span>
+                    </div>
+                    <!-- Wishlist Button: opens every game the player has saved -->
+                    <button type="button" class="cart-btn-container wishlist-btn" id="wishlistBtn" aria-label="Open your wishlist" aria-pressed="false">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 7.9 3.6 4.5 7 4.5c2 0 3.4 1.1 5 3 1.6-1.9 3-3 5-3 3.4 0 5.6 3.4 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2Z"></path>
+                        </svg>
+                        <span class="cart-counter" id="wishlistCounter">0</span>
+                    </button>
+                    <!-- Shopping Cart Counter Button -->
+                    <div class="cart-btn-container" id="cartBtn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        <span class="cart-counter" id="cartCounter">0</span>
+                    </div>
+                    <div class="profile-menu-container">
+                        <button id="profileMenuToggle" class="profile-menu-toggle" type="button" aria-expanded="false" aria-controls="profileMenu" aria-label="Open profile menu">
+                            <img id="profileAvatarImage" class="profile-avatar-image hidden" alt="">
+                            <span id="avatar-char" class="user-avatar">U</span>
+                            <span id="display-name" class="profile-menu-name">Profile</span>
+                            <span class="profile-menu-chevron" aria-hidden="true">⌄</span>
+                        </button>
+                        <div id="profileMenu" class="profile-menu hidden">
+                            <div class="profile-menu-user">
+                                <strong id="profileMenuUserName">Your account</strong>
+                                <span id="profileMenuUserEmail"></span>
+                            </div>
+                            <button type="button" data-account-view="profile">Profile</button>
+                            <button type="button" data-account-view="settings">Account settings</button>
+                            <button type="button" data-account-view="transactions">Transaction history</button>
+                            <button type="button" id="signOutButton">Sign out</button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div id="home-dashboard-view" class="home-view-panel">
+                <header id="featuredHero" class="promo-hero-banner">
+                    <div class="hero-banner-content">
+                        <span class="hero-badge">FEATURED GAME</span>
+                        <span id="featuredGamePlatform" class="hero-game-platform">NINTENDO SWITCH</span>
+                        <h2 id="featuredGameTitle" class="hero-headline">Welcome to NinExpo</h2>
+                        <p id="featuredGameDescription" class="hero-subtext">Find your next favorite game. Explore highlights from our collection, then browse the full catalog.</p>
+                        <div class="hero-actions">
+                            <button class="btn-hero-action" type="button" onclick="navigateToHomeCatalog()">Explore catalog</button>
+                            <button id="featuredGameDetailsButton" class="btn-hero-secondary" type="button">View featured game</button>
+                        </div>
+                        <div id="featuredDots" class="hero-dots" role="group" aria-label="Choose a featured game"></div>
+                    </div>
+                    <div class="hero-feature-art">
+                        <div class="hero-art-glow" aria-hidden="true"></div>
+                        <img id="featuredGameImage" src="" alt="" fetchpriority="high">
+                    </div>
+                </header>
+
+                <section class="game-corner-section" aria-labelledby="game-corner-title">
+                    <div class="dashboard-section-heading">
+                        <div>
+                            <span class="dashboard-eyebrow">GAME CORNER</span>
+                            <h3 class="section-row-title" id="game-corner-title">News, releases and what's next</h3>
+                        </div>
+                        <span id="gameCornerUpdated" class="game-corner-updated"></span>
+                    </div>
+                    <div id="gameCornerSpotlight" class="game-corner-spotlight"></div>
+                    <div class="game-corner-tabs" role="group" aria-label="Game news categories">
+                        <button type="button" class="game-corner-tab" data-news-tab="upcoming" aria-pressed="true">Coming soon</button>
+                        <button type="button" class="game-corner-tab" data-news-tab="released" aria-pressed="false">Just released</button>
+                        <button type="button" class="game-corner-tab" data-news-tab="console" aria-pressed="false">Console news</button>
+                    </div>
+                    <div id="gameCornerGrid" class="game-corner-grid" aria-live="polite"></div>
+                </section>
+
+                <section class="featured-highlights-section" aria-labelledby="featured-highlights-title">
+                    <div class="dashboard-section-heading">
+                        <div>
+                            <span class="dashboard-eyebrow">FAN FAVORITES</span>
+                            <h3 class="section-row-title" id="featured-highlights-title">Top picks from every platform</h3>
+                        </div>
+                        <button type="button" id="dashboardGameCount" class="dashboard-game-count" onclick="navigateToHomeCatalog()"></button>
+                    </div>
+                    <div class="highlights-preview-deck" id="featuredHighlightsDeck"></div>
+                </section>
+
+                <section class="portal-hubs-section" aria-labelledby="platform-hubs-title">
+                    <h3 class="section-row-title" id="platform-hubs-title">Browse by platform</h3>
+                    <div class="portal-cards-row">
+                        <article class="hub-promo-card switch-theme" role="button" tabindex="0" aria-label="Browse Nintendo Switch games" data-platform="switch">
+                            <h4>Nintendo Switch</h4>
+                            <p>Explore games for your Switch library.</p>
+                            <span class="hub-action-arrow">Browse games →</span>
+                        </article>
+                        <article class="hub-promo-card psp-theme" role="button" tabindex="0" aria-label="Browse PlayStation games" data-platform="psp">
+                            <h4>PlayStation</h4>
+                            <p>Discover adventures across PlayStation.</p>
+                            <span class="hub-action-arrow">Browse games →</span>
+                        </article>
+                        <article class="hub-promo-card xbox-theme" role="button" tabindex="0" aria-label="Browse Xbox games" data-platform="xbox">
+                            <h4>Xbox</h4>
+                            <p>Find your next game on Xbox.</p>
+                            <span class="hub-action-arrow">Browse games →</span>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="platform-guide-section" aria-labelledby="platform-guide-title">
+                    <div class="dashboard-section-heading">
+                        <div>
+                            <span class="dashboard-eyebrow">PLATFORM GUIDE</span>
+                            <h3 class="section-row-title" id="platform-guide-title">Where each platform comes from</h3>
+                        </div>
+                    </div>
+                    <div class="platform-guide-grid">
+                        <article class="platform-guide-card switch-theme">
+                            <header class="platform-guide-header">
+                                <span class="platform-guide-logo"><img src="images/nintendo-switch-seeklogo.png" alt="" aria-hidden="true"></span>
+                                <div>
+                                    <h4>Nintendo</h4>
+                                    <p>Kyoto, Japan · Founded 1889</p>
+                                </div>
+                            </header>
+                            <p class="platform-guide-summary">A playing card maker that grew into one of gaming's best-known names, home to Mario, Zelda, Kirby and Splatoon, with Pokémon on Switch.</p>
+                            <ol class="platform-timeline">
+                                <li><span class="timeline-year">1889</span><p>Fusajiro Yamauchi founds Nintendo in Kyoto to make hanafuda playing cards.</p></li>
+                                <li><span class="timeline-year">1983</span><p>The Famicom launches in Japan and reaches North America as the NES in 1985.</p></li>
+                                <li><span class="timeline-year">1989</span><p>Game Boy puts Nintendo games in your pocket.</p></li>
+                                <li><span class="timeline-year">2017</span><p>Nintendo Switch launches on March 3 as a home and handheld hybrid.</p></li>
+                                <li><span class="timeline-year">2025</span><p>Nintendo Switch 2 launches on June 5.</p></li>
+                            </ol>
+                            <div class="platform-guide-footer">
+                                <span><strong data-platform-count="switch">0</strong> games in our store</span>
+                                <button type="button" class="platform-guide-link" onclick="navigateToPlatformCatalog('switch')">Browse games</button>
+                            </div>
+                        </article>
+
+                        <article class="platform-guide-card psp-theme">
+                            <header class="platform-guide-header">
+                                <span class="platform-guide-logo"><img src="images/playstation-seeklogo.png" alt="" aria-hidden="true"></span>
+                                <div>
+                                    <h4>PlayStation</h4>
+                                    <p>Sony · First console 1994</p>
+                                </div>
+                            </header>
+                            <p class="platform-guide-summary">Sony's gaming brand, known for big story-driven adventures like God of War, The Last of Us, Horizon and Marvel's Spider-Man.</p>
+                            <ol class="platform-timeline">
+                                <li><span class="timeline-year">1994</span><p>The original PlayStation launches in Japan on December 3.</p></li>
+                                <li><span class="timeline-year">2000</span><p>PlayStation 2 arrives and becomes one of the best-selling consoles of all time.</p></li>
+                                <li><span class="timeline-year">2006</span><p>PlayStation 3 and PlayStation Network launch.</p></li>
+                                <li><span class="timeline-year">2013</span><p>PlayStation 4 launches in November.</p></li>
+                                <li><span class="timeline-year">2020</span><p>PlayStation 5 launches on November 12.</p></li>
+                            </ol>
+                            <div class="platform-guide-footer">
+                                <span><strong data-platform-count="psp">0</strong> games in our store</span>
+                                <button type="button" class="platform-guide-link" onclick="navigateToPlatformCatalog('psp')">Browse games</button>
+                            </div>
+                        </article>
+
+                        <article class="platform-guide-card xbox-theme">
+                            <header class="platform-guide-header">
+                                <span class="platform-guide-logo"><img src="images/xbox-app-seeklogo.png" alt="" aria-hidden="true"></span>
+                                <div>
+                                    <h4>Xbox</h4>
+                                    <p>Microsoft · First console 2001</p>
+                                </div>
+                            </header>
+                            <p class="platform-guide-summary">Microsoft's gaming platform, built around Halo, Forza and Gears of War, and the Xbox Game Pass subscription.</p>
+                            <ol class="platform-timeline">
+                                <li><span class="timeline-year">2001</span><p>Xbox launches on November 15 in North America alongside Halo: Combat Evolved.</p></li>
+                                <li><span class="timeline-year">2002</span><p>Xbox Live brings online play to consoles.</p></li>
+                                <li><span class="timeline-year">2005</span><p>Xbox 360 launches in November.</p></li>
+                                <li><span class="timeline-year">2017</span><p>Xbox Game Pass launches as a game subscription.</p></li>
+                                <li><span class="timeline-year">2020</span><p>Xbox Series X and Series S launch on November 10.</p></li>
+                            </ol>
+                            <div class="platform-guide-footer">
+                                <span><strong data-platform-count="xbox">0</strong> games in our store</span>
+                                <button type="button" class="platform-guide-link" onclick="navigateToPlatformCatalog('xbox')">Browse games</button>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="shop-info-section" aria-labelledby="shop-info-title">
+                    <div class="dashboard-section-heading">
+                        <div>
+                            <span class="dashboard-eyebrow">ABOUT THE SHOP</span>
+                            <h3 class="section-row-title" id="shop-info-title">NinExpo eShop at a glance</h3>
+                        </div>
+                    </div>
+                    <div class="shop-info-grid">
+                        <article class="shop-info-card">
+                            <span class="shop-info-label">Based in</span>
+                            <strong>Catbangen, San Fernando</strong>
+                            <p>La Union, Philippines. Disc and card orders ship from our shop.</p>
+                        </article>
+                        <article class="shop-info-card">
+                            <span class="shop-info-label">Catalog</span>
+                            <strong>Three platforms, one store</strong>
+                            <p><span data-platform-count="switch">0</span> Switch, <span data-platform-count="psp">0</span> PlayStation and <span data-platform-count="xbox">0</span> Xbox games.</p>
+                        </article>
+                        <article class="shop-info-card">
+                            <span class="shop-info-label">Delivery</span>
+                            <strong>Disc/Card or Promo Code</strong>
+                            <p>Physical copies ship from La Union. Promo codes arrive in your email right after checkout.</p>
+                        </article>
+                        <article class="shop-info-card">
+                            <span class="shop-info-label">Payments</span>
+                            <strong>Pay your way</strong>
+                            <p>Mastercard / Visa, GCash, PayPal, 7-Eleven Pay and bank transfer.</p>
+                        </article>
+                    </div>
+                </section>
+            </div>
+
+            <p id="searchStatus" class="search-status hidden" role="status" aria-live="polite"></p>
+            <section id="wishlistHeader" class="wishlist-header hidden" aria-labelledby="wishlistTitle"></section>
+
+            <!-- Dynamic Games Grid Area -->
+            <div class="games-grid" id="gamesContainer"></div>
+
+            <!-- NEW: Unmissable Floating Action Buy Button -->
+            <button id="floatingBuyBtn" class="floating-buy-btn hidden-btn">
+                <span class="btn-pulse-wave"></span>
+                <div class="floating-btn-content">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    <span>Proceed to Checkout (<strong id="floatingCartCount">0</strong>)</span>
+                </div>
+            </button>
+
+        </main>
+    </div>
+
+    <button id="settingsToggle" class="settings-toggle hidden" type="button" aria-expanded="false" aria-controls="settingsPanel" aria-label="Open currency settings">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.7 2.94-.08-.02a1.7 1.7 0 0 0-1.75.5l-.06.06h-3.4l-.06-.08a1.7 1.7 0 0 0-1.75-.5l-.08.02-1.7-2.94.06-.06A1.7 1.7 0 0 0 9.6 15l-.02-.08v-3.4l.08-.06a1.7 1.7 0 0 0 .5-1.75l-.02-.08 2.94-1.7.06.06a1.7 1.7 0 0 0 1.88.34l.08-.02h3.4l.06.08a1.7 1.7 0 0 0 1.75.5l.08-.02 1.7 2.94-.06.06A1.7 1.7 0 0 0 21.6 13l.02.08v1.84z" transform="translate(-3 -3)"></path>
+        </svg>
+        <span>Settings</span>
+    </button>
+    <section id="settingsPanel" class="settings-panel hidden" role="dialog" aria-label="Currency settings">
+        <div class="settings-panel-header">
+            <div>
+                <h2>Settings</h2>
+                <p>Choose your display currency</p>
+            </div>
+            <button id="closeSettingsBtn" class="close-modal-btn" type="button" aria-label="Close settings">&times;</button>
+        </div>
+        <label for="currencySelect">Currency</label>
+        <select id="currencySelect">
+            <option value="PHP">Philippine peso (PHP)</option>
+            <option value="USD">US dollar (USD)</option>
+            <option value="IQD">Iraqi dinar (IQD)</option>
+            <option value="JPY">Japanese yen (JPY)</option>
+            <option value="CNY">Chinese yuan (CNY)</option>
+            <option value="KRW">South Korean won (KRW)</option>
+            <option value="EUR">Euro (EUR)</option>
+        </select>
+        <p class="currency-rate-note">Approximate rates based on USD, updated Oct 6, 2026.</p>
+    </section>
+
+    <div id="accountDialog" class="account-dialog hidden" role="dialog" aria-modal="true" aria-labelledby="accountDialogTitle">
+        <section class="account-panel">
+            <div class="account-panel-header">
+                <div>
+                    <p class="account-eyebrow">Account</p>
+                    <h2 id="accountDialogTitle">Profile</h2>
+                </div>
+                <button id="closeAccountDialog" class="close-modal-btn" type="button" aria-label="Close account panel">&times;</button>
+            </div>
+            <nav class="account-tabs" aria-label="Account sections">
+                <button type="button" data-account-view="profile" class="active">Profile</button>
+                <button type="button" data-account-view="settings">Settings</button>
+                <button type="button" data-account-view="transactions">Transactions</button>
+            </nav>
+            <div id="accountViewProfile" class="account-view">
+                <form id="profileForm">
+                    <div class="profile-editor-avatar">
+                        <img id="profilePreview" class="hidden" alt="Profile photo preview">
+                        <span id="profilePreviewInitial">U</span>
+                        <label for="profilePhotoInput" class="btn-secondary">Choose photo</label>
+                        <input id="profilePhotoInput" type="file" accept="image/jpeg,image/png,image/webp" class="visually-hidden">
+                    </div>
+                    <div class="form-group">
+                        <label for="profileName">Username</label>
+                        <input id="profileName" type="text" maxlength="60" required autocomplete="nickname">
+                    </div>
+                    <div class="form-group">
+                        <label for="profileEmail">Account email</label>
+                        <input id="profileEmail" type="email" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="profileAge">Age</label>
+                        <input id="profileAge" type="number" min="13" max="120" required inputmode="numeric">
+                    </div>
+                    <p class="delivery-address-note">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+                        <span><strong>This is your delivery address.</strong> Disc/Card orders ship here, and it sets your delivery estimate. Changes apply to future orders.</span>
+                    </p>
+                    <div class="account-address-grid">
+                        <div class="form-group"><label for="profileCountry">Country</label><input id="profileCountry" required autocomplete="country-name"></div>
+                        <div class="form-group"><label for="profileProvince">Province / State</label><input id="profileProvince" required autocomplete="address-level1"></div>
+                        <div class="form-group"><label for="profileCity">City / Municipality</label><input id="profileCity" required autocomplete="address-level2"></div>
+                        <div class="form-group"><label for="profileBarangay">Barangay / District</label><input id="profileBarangay" required></div>
+                    </div>
+                    <p id="profileMessage" class="auth-message" role="status" aria-live="polite"></p>
+                    <button type="submit" class="btn-submit">Save profile</button>
+                </form>
+            </div>
+            <div id="accountViewSettings" class="account-view hidden">
+                <form id="emailChangeForm">
+                    <p class="account-help-text">Changing this address updates the email associated with this account in this browser. No verification email is sent.</p>
+                    <div class="form-group">
+                        <label for="newAccountEmail">New email address</label>
+                        <input id="newAccountEmail" type="email" autocomplete="email" required>
+                    </div>
+                    <p id="settingsMessage" class="auth-message" role="status" aria-live="polite"></p>
+                    <button type="submit" class="btn-submit">Update local email</button>
+                </form>
+                <div class="account-security-note">
+                    <strong>Account access</strong>
+                    <p>This account is identified by email only and is not protected by a password. Anyone with access to this browser profile may open it.</p>
+                </div>
+                <button type="button" class="btn-secondary" data-open-currency-settings>Display currency settings</button>
+            </div>
+            <div id="accountViewTransactions" class="account-view hidden">
+                <p class="account-help-text">Order records are stored in this browser and are not synced to an online account.</p>
+                <div id="transactionHistoryList" class="transaction-history-list" aria-live="polite"></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 3. SHOPPING CART OVERLAY MODAL -->
+    <div id="cart-modal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>Your Shopping Cart</h2>
+                <button class="close-modal-btn" id="closeCartBtn">&times;</button>
+            </div>
+            
+            <!-- Items Selection Stage -->
+            <div id="checkout-stage-items">
+                <div class="cart-items-list" id="cartItemsList"></div>
+                <div class="cart-total-row">
+                    <span>Total Bill:</span>
+                    <span id="cartTotalValue">₱0.00</span>
+                </div>
+                <button class="btn-submit" id="proceedToPayBtn">Proceed to Checkout</button>
+            </div>
+
+            <!-- Payment Mode Stage -->
+            <div id="checkout-stage-payment" class="hidden">
+                <h3>Payment details</h3>
+                <p id="checkoutError" class="auth-message error hidden" role="alert"></p>
+                <div class="payment-grid">
+                    <label class="payment-option">
+                        <input type="radio" name="paymentMethod" value="mastercard" checked>
+                        <span>💳 Mastercard / Visa</span>
+                    </label>
+                    <label class="payment-option">
+                        <input type="radio" name="paymentMethod" value="gcash">
+                        <span>📱 GCash</span>
+                    </label>
+                    <label class="payment-option">
+                        <input type="radio" name="paymentMethod" value="paypal">
+                        <span>🅿️ PayPal</span>
+                    </label>
+                    <label class="payment-option">
+                        <input type="radio" name="paymentMethod" value="711">
+                        <span>🏪 7-Eleven Pay</span>
+                    </label>
+                    <label class="payment-option">
+                        <input type="radio" name="paymentMethod" value="bank">
+                        <span>🏦 Bank Transfer</span>
+                    </label>
+                </div>
+
+                <!-- Dynamic Processing Forms -->
+                <div id="payment-form-fields" class="payment-fields-wrapper">
+                </div>
+                <p class="payment-security-note">For your security, only the last 4 digits of your card are needed. Never enter your full card number, security code, password, or PIN.</p>
+
+                <div class="modal-footer-btns">
+                    <button class="btn-secondary" id="backToCartBtn">Back</button>
+                    <button class="btn-submit" id="finalPlaceOrderBtn" style="margin-top:0;">Place Order</button>
+                </div>
+            </div>
+
+            <!-- Receipt Success Stage -->
+            <div id="checkout-stage-success" class="hidden text-center">
+                <div class="success-icon">✓</div>
+                <h2>Order placed</h2>
+                <p class="success-msg">Summary for <span id="receipt-user">Player</span>.</p>
+                <div class="receipt-box" id="receiptDetails"></div>
+                <button class="btn-submit" id="closeSuccessBtn">Continue Shopping</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="gameDetailsDialog" class="game-details-dialog hidden" role="dialog" aria-modal="true" aria-labelledby="gameDetailsTitle">
+        <section class="game-details-panel">
+            <button id="closeGameDetails" class="image-lightbox-close" type="button" aria-label="Close game details">&times;</button>
+            <div id="gameDetailsContent"></div>
+        </section>
+    </div>
+
+    <div id="imageLightbox" class="image-lightbox hidden" role="dialog" aria-modal="true" aria-label="Enlarged game cover art">
+        <button id="closeImageLightbox" class="image-lightbox-close" type="button" aria-label="Close enlarged image">&times;</button>
+        <img id="lightboxImage" class="image-lightbox-img" alt="">
+    </div>
+
+    
+    <div id="quantityDialog" class="quantity-dialog hidden" role="dialog" aria-modal="true" aria-labelledby="quantityDialogTitle">
+        <section class="quantity-panel">
+            <button id="closeQuantityDialog" class="close-modal-btn" type="button" aria-label="Close quantity picker">&times;</button>
+            <h2 id="quantityDialogTitle">Add to cart</h2>
+            <p id="quantityDialogMeta" class="quantity-meta"></p>
+            <label for="quantityInput" class="quantity-label">How many would you like?</label>
+            <div class="quantity-stepper">
+                <button id="quantityMinus" type="button" aria-label="Decrease quantity">&minus;</button>
+                <input id="quantityInput" type="number" min="1" max="99" value="1" inputmode="numeric">
+                <button id="quantityPlus" type="button" aria-label="Increase quantity">+</button>
+            </div>
+            <div class="quantity-subtotal"><span>Subtotal</span><strong id="quantitySubtotal"></strong></div>
+            <div class="modal-footer-btns">
+                <button id="cancelQuantityBtn" class="btn-secondary" type="button">Cancel</button>
+                <button id="confirmQuantityBtn" class="btn-submit" type="button" style="margin-top:0;">Add to Cart</button>
+            </div>
+        </section>
+    </div>
+
+    <div id="newsDetailsDialog" class="news-dialog hidden" role="dialog" aria-modal="true" aria-labelledby="newsDialogTitle">
+        <section class="news-dialog-panel">
+            <button id="closeNewsDialog" class="close-modal-btn" type="button" aria-label="Close details">&times;</button>
+            <div id="newsDialogArt" class="news-dialog-art hidden"></div>
+            <div class="news-dialog-body">
+                <div class="news-dialog-head">
+                    <div id="newsDialogPlatforms" class="news-platforms"></div>
+                    <span id="newsDialogStatus" class="news-status"></span>
+                </div>
+                <div class="news-dialog-titlerow">
+                    <h2 id="newsDialogTitle"></h2>
+                    <span id="newsDialogRating" class="news-rating hidden" aria-label="ESRB age rating"></span>
+                </div>
+                <p id="newsDialogDate" class="news-date"></p>
+                <p id="newsDialogDescription" class="news-dialog-desc"></p>
+                <dl id="newsDialogFacts" class="news-facts"></dl>
+                <ul id="newsDialogHighlights" class="news-highlights"></ul>
+                <div id="newsDialogStats" class="news-stats"></div>
+                <div class="news-dialog-actions">
+                    <button id="newsWishlistBtn" class="btn-secondary" type="button" aria-pressed="false">Add to wishlist</button>
+                    <button id="newsStoreBtn" class="btn-submit" type="button" hidden>View in store</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

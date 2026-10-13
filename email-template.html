@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<meta name="supported-color-schemes" content="dark">
+<title>{{site_name}} order {{order_id}}</title>
+</head>
+<body style="margin:0; padding:0; background-color:#0B0B0C; color:#F5F5F7; font-family:-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+
+<!-- Inbox preview text -->
+<div style="display:none; max-height:0; overflow:hidden; opacity:0; color:#0B0B0C;">
+  Your order {{order_id}} is confirmed: {{item_count}} item(s), total {{order_total}}.
+</div>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#0B0B0C" style="background-color:#0B0B0C;">
+<tr><td align="center" style="padding:32px 14px;">
+
+  <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%; max-width:600px;">
+
+    <!-- Brand header -->
+    <tr><td style="padding:0 4px 18px 4px;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+        {{#logo_url}}
+        <td valign="middle" style="padding-right:12px;">
+          <img src="{{logo_url}}" width="44" height="44" alt="" style="display:block; width:44px; height:44px; border:0; border-radius:12px;">
+        </td>
+        {{/logo_url}}
+        <td valign="middle" style="font-size:22px; font-weight:800; letter-spacing:-0.4px; color:#FFFFFF;">{{site_name}}</td>
+      </tr></table>
+    </td></tr>
+
+    <!-- Card -->
+    <tr><td style="background-color:#18181C; border:1px solid #2A2A30; border-radius:20px; overflow:hidden;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+
+        <!-- Red accent bar -->
+        <tr><td height="5" style="height:5px; line-height:5px; font-size:0; background-color:#FF1A2B;">&nbsp;</td></tr>
+
+        <!-- Greeting -->
+        <tr><td style="padding:30px 30px 6px 30px;">
+          <div style="font-size:26px; font-weight:800; letter-spacing:-0.6px; color:#FFFFFF; line-height:1.2;">Order confirmed</div>
+          <div style="margin-top:10px; font-size:15px; line-height:1.6; color:#C9C9D1;">
+            Hi {{to_name}}, thanks for shopping with us. Here is your receipt.
+          </div>
+        </td></tr>
+
+        <!-- Order details -->
+        <tr><td style="padding:20px 30px 6px 30px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#101013; border:1px solid #2A2A30; border-radius:14px;">
+            <tr><td style="padding:16px 18px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size:13px; line-height:1.5;">
+                <tr>
+                  <td valign="top" width="110" style="padding:5px 0; color:#A1A1AA;">Reference</td>
+                  <td valign="top" style="padding:5px 0; color:#F5F5F7; font-weight:600; word-break:break-all;">{{order_id}}</td>
+                </tr>
+                <tr>
+                  <td valign="top" style="padding:5px 0; color:#A1A1AA;">Date</td>
+                  <td valign="top" style="padding:5px 0; color:#F5F5F7; font-weight:600;">{{order_date}}</td>
+                </tr>
+                <tr>
+                  <td valign="top" style="padding:5px 0; color:#A1A1AA;">Payment method</td>
+                  <td valign="top" style="padding:5px 0; color:#F5F5F7; font-weight:600;">{{payment_method}}</td>
+                </tr>
+                <tr>
+                  <td valign="top" style="padding:5px 0; color:#A1A1AA;">Ship to</td>
+                  <td valign="top" style="padding:5px 0; color:#F5F5F7; font-weight:600;">{{ship_to}}</td>
+                </tr>
+              </table>
+            </td></tr>
+          </table>
+        </td></tr>
+
+        <!-- Items -->
+        <tr><td style="padding:22px 30px 0 30px;">
+          <div style="font-size:12px; font-weight:700; letter-spacing:0.08em; color:#FF6672; text-transform:uppercase; padding-bottom:10px; border-bottom:1px solid #2A2A30;">Your games</div>
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+            {{#orders}}
+            <tr>
+              <td valign="top" style="padding:14px 0; border-bottom:1px solid #26262C;">
+                <div style="font-size:15px; font-weight:700; color:#FFFFFF; line-height:1.35;">{{name}}</div>
+                <div style="margin-top:3px; font-size:12px; color:#A1A1AA; line-height:1.5;">{{platform}} &middot; {{format}} &middot; {{unit_price}} each</div>
+              </td>
+              <td valign="top" align="center" width="64" style="padding:14px 6px; border-bottom:1px solid #26262C; font-size:14px; font-weight:800; color:#FF6672; white-space:nowrap;">&times;{{units}}</td>
+              <td valign="top" align="right" width="110" style="padding:14px 0; border-bottom:1px solid #26262C; font-size:15px; font-weight:700; color:#FFFFFF; white-space:nowrap;">{{line_total}}</td>
+            </tr>
+            {{/orders}}
+          </table>
+        </td></tr>
+
+        <!-- Total -->
+        <tr><td style="padding:16px 30px 0 30px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              <td style="font-size:14px; color:#A1A1AA;">Total &middot; {{item_count}} item(s)</td>
+              <td align="right" style="font-size:24px; font-weight:800; letter-spacing:-0.4px; color:#FFFFFF;">{{order_total}}</td>
+            </tr>
+          </table>
+        </td></tr>
+
+        <!-- Promo codes: one big card per code -->
+        {{#promo_codes}}
+        <tr><td style="padding:18px 30px 0 30px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#2A1215; border:2px solid #FF1A2B; border-radius:14px;">
+            <tr><td align="center" style="padding:20px 14px;">
+              <div style="font-size:12px; font-weight:800; letter-spacing:0.12em; color:#FF6672; text-transform:uppercase;">Your promo code</div>
+              <div style="margin-top:5px; font-size:14px; font-weight:600; color:#F5F5F7;">{{game}} &middot; {{platform}}</div>
+              <div style="margin-top:14px; font-family:'Courier New', Consolas, monospace; font-size:26px; font-weight:800; letter-spacing:3px; color:#FFFFFF; word-break:break-all;">{{code}}</div>
+            </td></tr>
+          </table>
+        </td></tr>
+        {{/promo_codes}}
+
+        <!-- Delivery note -->
+        <tr><td style="padding:22px 30px 30px 30px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#2A1215; border:1px dashed #FF1A2B; border-radius:12px;">
+            <tr><td style="padding:14px 16px; font-size:13px; line-height:1.6; color:#FFB3BA;">
+              {{delivery_estimate}}
+            </td></tr>
+          </table>
+        </td></tr>
+
+      </table>
+    </td></tr>
+
+    <!-- Footer -->
+    <tr><td align="center" style="padding:20px 20px 0 20px; font-size:11px; line-height:1.7; color:#71717A;">
+      {{site_name}} &middot; {{ship_from}}<br>
+      This receipt was sent to {{to_email}}
+    </td></tr>
+
+  </table>
+
+</td></tr>
+</table>
+
+</body>
+</html>
